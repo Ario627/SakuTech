@@ -1,0 +1,38 @@
+@theme {
+    --color-warm-bg: #fdf6ee;
+    --color-warm-surface: #fff8f0;
+    --color-warm-narration: rgba(232, 213, 192, 0.25);
+    --color-warm-border: #e8d5c0;
+
+    --color-rose-accent: #c96a5a;
+    --color-amber-accent: #e8a045;
+    --color-teal-accent: #7a9e9f;
+
+    --color-text-primary: #2d1f1a;
+    --color-text-body: #4a3728;
+    --color-text-secondary: #9c7c6e;
+
+    --color-success: #5a9e7a;
+    --color-error: #c96a5a;
+    --color-code-bg: #f0e6d8;
+    --color-code-text: #c96a5a;
+    --color-warm-shadow: rgba(180, 120, 90, 0.12);
+
+    --color-correct-bg: #e8f4ec;
+    --color-wrong-bg: #fde8e8;
+
+    --color-erine-avatar: #e8a045;
+    --color-erine-bubble: #f0e6d8;
+    --color-alaska-avatar: #7a9e9f;
+    --color-alaska-bubble: #d4e8e8;
+
+    --font-serif: var(--font-geist-sans), "Georgia", "Times New Roman", serif;
+    --font-mono: var(--font-geist-mono), "Fira Code", "Courier New", monospace;
+
+    --spacing-reader-x: 1.25rem;
+    --spacing-reader-y: 0.75rem;
+
+    --duration-story-fade: 400ms;
+    --duration-quiz-spring: 300ms;
+    --duration-xp-float: 800ms;
+}

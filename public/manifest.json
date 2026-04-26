@@ -1,0 +1,22 @@
+{
+  "name": "SakuTech",
+  "short_name": "SakuTech",
+  "description": "Platform micro-learning interaktif berbasis narasi untuk pemerataan keahlian digital.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fdf6ee",
+  "theme_color": "#c96a5a",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
