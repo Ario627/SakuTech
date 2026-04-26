@@ -15,7 +15,7 @@ function getDateString(dayAgo: number): string {
 }
 
 function computeStreakData(progress: UserProgresss) {
-  const { currentStreak, lastActiveDate, completedChapters } = progress;
+  const { currentStreaks, lastActiveDate, completedChapters } = progress;
 
   const last7Days: StreakDay[] = Array.from({ length: 7 }, (_, i) => {
     const date = getDateString(6 - i);
@@ -26,7 +26,7 @@ function computeStreakData(progress: UserProgresss) {
 
   const today = getDateString(0);
   const isTodayActive = lastActiveDate === today;
-  const streakDays = Math.min(currentStreak, 7);
+  const streakDays = Math.min(currentStreaks, 7);
 
   for (let i = 0; i < streakDays; i++) {
     const date = getDateString(i);
@@ -35,7 +35,7 @@ function computeStreakData(progress: UserProgresss) {
   }
 
   return {
-    currentStreak,
+    currentStreaks,
     isTodayActive,
     last7Days,
     totalCompleted: completedSet.size,
