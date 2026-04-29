@@ -13,7 +13,7 @@ import {
 import { chapters } from "@/data/chapters";
 
 export function useProgress(){
-    const [progress, setProgress] = useState<UserProgresss>(getProgress());
+    const [progress, setProgress] = useState<UserProgresss>(getProgress);
 
     useEffect(() => {
         const updateId = updateStreak();

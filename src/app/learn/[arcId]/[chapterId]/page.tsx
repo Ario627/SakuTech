@@ -1,6 +1,6 @@
 "use client";
 
-import {use} from "react";
+import { use } from "react";
 import { useRouter } from "next/navigation";
 import StoryReader from "@/components/story/StoryReader";
 import { chapters } from "@/data/chapters";
@@ -14,7 +14,7 @@ export default function ChapterPage({
 }) {
   const { arcId, chapterId } = use(params);
   const router = useRouter();
-  const { progress, markChapterComplete, isArcUnlocked } = useProgress();
+  const { progress, markChapterComplete } = useProgress();
 
   const chapter = chapters.find((c) => c.id === chapterId);
   const arc = arcs.find((a) => a.id === arcId);

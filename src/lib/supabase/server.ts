@@ -22,7 +22,7 @@ export async function createServerSupabaseClient() {
             cookieStore.set(name, value, options),
           );
         } catch {
-          // Middleware — setAll called from non-Server Component
+          //
         }
       },
     },

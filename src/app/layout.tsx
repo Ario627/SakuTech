@@ -1,20 +1,30 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Playfair_Display, Lora, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from "@/components/auth/AuthProvider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const playfair = Playfair_Display({
   subsets: ["latin"],
+  variable: "--font-playfair",
+  weight: ["700", "900"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const lora = Lora({
   subsets: ["latin"],
+  variable: "--font-lora",
+  style: ["normal", "italic"],
+  weight: ["400", "500"],
+});
+
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-jakarta",
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
-  title: "SakuTech — Belajar Coding Lewat Cerita",
-  description: "Platform pembelajaran coding berbasis cerita romance SMA untuk siswa Indonesia.",
+  title: "SakuTech",
+  description: "Belajar coding lewat cerita romance SMA — untuk siswa Indonesia.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -37,10 +47,10 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${playfair.variable} ${lora.variable} ${jakarta.variable} antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-warm-bg">
-        {children}
+      <body className="font-jakarta bg-warm-bg text-text-primary min-h-dvh">
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

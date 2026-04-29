@@ -4,8 +4,9 @@
 @theme inline {
   --color-background: var(--color-warm-bg);
   --color-foreground: var(--color-text-primary);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-jakarta);
+  --font-serif: var(--font-playfair);
+  --font-mono: var(--font-mono);
 }
 
 * {
@@ -20,7 +21,7 @@ html {
 body {
   background: var(--color-warm-bg);
   color: var(--color-text-primary);
-  font-family: var(--font-sans), system-ui, sans-serif;
+  font-family: var(--font-ui);
   overscroll-behavior-y: contain;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

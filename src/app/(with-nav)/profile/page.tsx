@@ -7,32 +7,21 @@ import { chapters } from "@/data/chapters";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import StatsSummary from "@/components/profile/StatsSummary";
 import StreakDots from "@/components/profile/StreakDots";
-import { MobileShell } from "@/components/layout/MobileShell";
-import { BottomNav } from "@/components/layout/BottomNav";
-import { useState } from "react";
+import MobileShell from "@/components/layout/MobileShell";
+import BottomNav from "@/components/layout/BottomNav";
+
+import { useAuth } from "@/components/auth/AuthProvider";
 
 export default function ProfilePage() {
   const { progress } = useProgress();
   const streakData = useStreak();
 
-  const [isLoggedIn] = useState(false);
-  const [userName] = useState<string | null>(null);
-  const [userEmail] = useState<string | null>(null);
-  const [userAvatar] = useState<string | null>(null);
+  const { user, isLoggedIn, login, logout } = useAuth();
 
   const completedArcs = arcs.filter((arc) => {
     const arcChapters = chapters.filter((c) => c.arcId === arc.id);
     return arcChapters.every((c) => progress.completedChapters.includes(c.id));
   }).length;
-
-  const handleLogin = () => {
-    // Supabase auth integration — P1
-    alert("Auth belum dikonfigurasi. Setup NEXT_PUBLIC_SUPABASE_URL dan NEXT_PUBLIC_SUPABASE_ANON_KEY di .env.local");
-  };
-
-  const handleLogout = () => {
-    // Supabase signOut — P1
-  };
 
   return (
     <MobileShell withNav>
@@ -43,12 +32,12 @@ export default function ProfilePage() {
 
       <div className="px-5 pb-8 flex flex-col gap-4">
         <ProfileHeader
-          name={userName}
-          email={userEmail}
-          avatarUrl={userAvatar}
+          name={user?.name}
+          email={user?.email}
+          avatarUrl={user?.avatarUrl}
           isLoggedIn={isLoggedIn}
-          onLogin={handleLogin}
-          onLogout={handleLogout}
+          onLogin={login}
+          onLogout={logout}
         />
 
         <StatsSummary

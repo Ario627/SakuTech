@@ -4,8 +4,8 @@ import { arcs } from "@/data/arcs";
 import { chapters } from "@/data/chapters";
 import ArcCard from "@/components/learn/ArcCard";
 import { useProgress } from "@/hooks/useProgress";
-import { MobileShell } from "@/components/layout/MobileShell";
-import { BottomNav } from "@/components/layout/BottomNav";
+import  MobileShell  from "@/components/layout/MobileShell";
+import  BottomNav  from "@/components/layout/BottomNav";
 
 export default function LearnPage() {
   const { progress, isArcUnlocked } = useProgress();

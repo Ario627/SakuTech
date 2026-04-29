@@ -89,7 +89,7 @@ export default function ArcCard({ arc, completedChapters, isLocked, index }: Arc
         {!isLocked && !hasStarted && (
           <div className="mt-3">
             <span className="text-rose-accent text-sm font-medium">
-              Mulai &#9654;
+              Mulai
             </span>
           </div>
         )}

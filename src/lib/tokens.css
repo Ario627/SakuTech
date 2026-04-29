@@ -26,8 +26,10 @@
     --color-alaska-avatar: #7a9e9f;
     --color-alaska-bubble: #d4e8e8;
 
-    --font-serif: var(--font-geist-sans), "Georgia", "Times New Roman", serif;
-    --font-mono: var(--font-geist-mono), "Fira Code", "Courier New", monospace;
+    --font-heading: var(--font-playfair), "Georgia", "Times New Roman", serif;
+    --font-body: var(--font-lora), "Georgia", serif;
+    --font-ui: var(--font-jakarta), system-ui, sans-serif;
+    --font-mono: ui-monospace, "Fira Code", "Courier New", monospace;
 
     --spacing-reader-x: 1.25rem;
     --spacing-reader-y: 0.75rem;

@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
-import { createClient } from "@/lib/supabase/client"; 
+import { createClient } from "@/lib/supabase/client";
 
 type AuthUser = {
   name: string | null;
@@ -13,6 +13,7 @@ type AuthContextType = {
   user: AuthUser;
   isLoggedIn: boolean;
   login: () => void;
+  loginWithEmail: (email: string, password: string, isSignUp?: boolean) => Promise<void>; // Login manual
   logout: () => void;
 };
 
@@ -31,7 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
         setUser({
-          name: session.user.user_metadata.full_name || session.user.email,
+          name: session.user.user_metadata.full_name || session.user.user_metadata.user_name || session.user.email,
           email: session.user.email!,
           avatarUrl: session.user.user_metadata.avatar_url || null,
         });
@@ -41,7 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
         setUser({
-          name: session.user.user_metadata.full_name || session.user.email,
+          name: session.user.user_metadata.full_name || session.user.user_metadata.user_name || session.user.email,
           email: session.user.email!,
           avatarUrl: session.user.user_metadata.avatar_url || null,
         });
@@ -60,14 +61,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
+      provider: 'github',
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
       }
     });
     
     if (error) {
-      console.error("Gagal login:", error.message);
+      console.error("Gagal login Github:", error.message);
+      alert("Gagal konek ke Github!");
+    }
+  }, [supabase]);
+
+  const loginWithEmail = useCallback(async (email: string, password: string, isSignUp = false) => {
+    if (!supabase) return;
+
+    if (isSignUp) {
+      const { error } = await supabase.auth.signUp({ email, password });
+      if (error) {
+        alert("Gagal daftar: " + error.message);
+      } else {
+        alert("Pendaftaran berhasil! Silakan cek email untuk verifikasi (jika diaktifkan di Supabase).");
+      }
+    } else {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        alert("Gagal login: " + error.message);
+      }
     }
   }, [supabase]);
 
@@ -78,7 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [supabase]);
 
   return (
-    <AuthContext.Provider value={{ user, isLoggedIn, login, logout }}>
+    <AuthContext.Provider value={{ user, isLoggedIn, login, loginWithEmail, logout }}>
       {children}
     </AuthContext.Provider>
   );

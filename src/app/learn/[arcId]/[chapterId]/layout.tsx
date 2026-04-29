@@ -1,4 +1,4 @@
-import { MobileShell } from "@/components/layout/MobileShell";
+import MobileShell from "@/components/layout/MobileShell";
 
 export default function ChapterLayout({
   children,

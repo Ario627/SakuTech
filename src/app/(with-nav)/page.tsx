@@ -1,5 +1,4 @@
 import HeroSection from "@/components/landing/HeroSection";
-import TeaserParagraph from "@/components/landing/TeaserParagraph";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
