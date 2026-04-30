@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { motion } from "framer-motion";
 import TapSlot from "./Tap";
 import TapOption from "./TapOption";
@@ -18,20 +18,31 @@ type TapLogicQuizProps = {
 
 type SlotState = "empty" | "filled" | "correct" | "wrong";
 
+// Normalize "___" and empty strings to null — data might use either format
+function normalizeSlots(slots: (string | null)[]): (string | null)[] {
+  return slots.map((s) => {
+    if (s === null || s === "___" || s === "" || s === "—") return null;
+    return s;
+  });
+}
+
 export default function TapLogicQuiz({
   setup,
-  slots,
+  slots: rawSlots,
   options,
   correctAnswer,
   rewardParagraph,
   onComplete,
 }: TapLogicQuizProps) {
-  const nullSlotIndices = slots
-    .map((s, i) => (s === null ? i : -1))
-    .filter((i) => i !== -1);
+  const slots = useMemo(() => normalizeSlots(rawSlots), [rawSlots]);
+
+  const nullSlotIndices = useMemo(
+    () => slots.map((s, i) => (s === null ? i : -1)).filter((i) => i !== -1),
+    [slots]
+  );
 
   const [filledSlots, setFilledSlots] = useState<(string | null)[]>(
-    nullSlotIndices.map(() => null)
+    () => nullSlotIndices.map(() => null)
   );
   const [usedOptions, setUsedOptions] = useState<boolean[]>(
     () => options.map(() => false)
@@ -62,35 +73,30 @@ export default function TapLogicQuiz({
       const stillEmpty = newFilled.filter((s) => s === null).length;
       if (stillEmpty === 0) {
         setPhase("checking");
-        setTimeout(() => checkAnswer(newFilled, newStates), 400);
+        setTimeout(() => {
+          const isCorrect = newFilled.every(
+            (val, i) => val === correctAnswer[i]
+          );
+
+          if (isCorrect) {
+            setSlotStates(newStates.map(() => "correct"));
+            setPhase("correct");
+            setTimeout(onComplete, 600);
+          } else {
+            setSlotStates(newStates.map(() => "wrong"));
+            setPhase("wrong");
+            setTimeout(() => {
+              setFilledSlots(nullSlotIndices.map(() => null));
+              setUsedOptions(options.map(() => false));
+              setSlotStates(nullSlotIndices.map(() => "empty"));
+              setPhase("filling");
+            }, 700);
+          }
+        }, 400);
       }
     },
-    [filledSlots, usedOptions, slotStates, options, phase]
+    [filledSlots, usedOptions, slotStates, options, correctAnswer, nullSlotIndices, phase, onComplete]
   );
-
-  const checkAnswer = (
-    currentFilled: (string | null)[],
-    currentStates: SlotState[]
-  ) => {
-    const isCorrect = currentFilled.every(
-      (val, i) => val === correctAnswer[i]
-    );
-
-    if (isCorrect) {
-      setSlotStates(currentStates.map(() => "correct"));
-      setPhase("correct");
-      setTimeout(onComplete, 600);
-    } else {
-      setSlotStates(currentStates.map(() => "wrong"));
-      setPhase("wrong");
-      setTimeout(() => {
-        setFilledSlots(nullSlotIndices.map(() => null));
-        setUsedOptions(options.map(() => false));
-        setSlotStates(nullSlotIndices.map(() => "empty"));
-        setPhase("filling");
-      }, 500);
-    }
-  };
 
   const handleSlotRemove = useCallback(
     (slotIndex: number) => {
@@ -99,17 +105,15 @@ export default function TapLogicQuiz({
       const value = filledSlots[slotIndex];
       if (!value) return;
 
+      // Find the option that matches this value and is currently used
       const optionIdx = options.findIndex(
-        (opt, i) => opt === value && !usedOptions[i]
-      );
-      const firstOptionIdx = options.findIndex(
         (opt, i) => opt === value && usedOptions[i]
       );
 
       const newFilled = [...filledSlots];
       newFilled[slotIndex] = null;
       const newUsed = [...usedOptions];
-      if (firstOptionIdx !== -1) newUsed[firstOptionIdx] = false;
+      if (optionIdx !== -1) newUsed[optionIdx] = false;
       const newStates = [...slotStates];
       newStates[slotIndex] = "empty";
 
@@ -120,48 +124,44 @@ export default function TapLogicQuiz({
     [filledSlots, usedOptions, slotStates, options, phase]
   );
 
-  const renderSlots = () => (
-    <div className="flex flex-wrap gap-2 justify-center my-5">
-      {slots.map((staticVal, i) => {
-        if (staticVal !== null) {
-          return <TapSlot key={`static-${i}`} value={staticVal} isStatic state="filled" />;
-        }
-
-        const nullIndex = nullSlotIndices.indexOf(i);
-        const filledVal = filledSlots[nullIndex];
-        const state = slotStates[nullIndex];
-
-        return (
-          <TapSlot
-            key={`slot-${i}`}
-            value={filledVal}
-            isStatic={false}
-            state={filledVal ? state : "empty"}
-            onRemove={() => handleSlotRemove(nullIndex)}
-          />
-        );
-      })}
-    </div>
-  );
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="px-(--spacing-reader-x) py-6"
+      className="px-5 py-6"
     >
       <div className="flex items-center justify-center gap-3 my-4 text-warm-border">
         <span className="h-px flex-1 bg-warm-border" />
-        <span className="text-xs tracking-widest">✦</span>
+        <span className="text-xs tracking-widest text-text-secondary">Quiz</span>
         <span className="h-px flex-1 bg-warm-border" />
       </div>
 
-      <p className="text-center text-text-body leading-relaxed text-[0.9375rem] mb-5">
+      <p className="text-center text-text-body leading-relaxed text-[0.9375rem] mb-5 font-body">
         {setup}
       </p>
 
-      {renderSlots()}
+      <div className="flex flex-wrap gap-2 justify-center my-5">
+        {slots.map((staticVal, i) => {
+          if (staticVal !== null) {
+            return <TapSlot key={`static-${i}`} value={staticVal} isStatic state="filled" />;
+          }
+
+          const nullIndex = nullSlotIndices.indexOf(i);
+          const filledVal = filledSlots[nullIndex];
+          const state = slotStates[nullIndex];
+
+          return (
+            <TapSlot
+              key={`slot-${i}`}
+              value={filledVal}
+              isStatic={false}
+              state={filledVal ? state : "empty"}
+              onRemove={() => handleSlotRemove(nullIndex)}
+            />
+          );
+        })}
+      </div>
 
       {phase === "filling" && (
         <div className="flex flex-wrap gap-2 justify-center mt-4">
@@ -177,7 +177,7 @@ export default function TapLogicQuiz({
       )}
 
       {phase === "wrong" && (
-        <p className="text-center text-error text-sm mt-3">
+        <p className="text-center text-error text-sm mt-3 font-body">
           Coba lagi — strukturnya belum tepat.
         </p>
       )}
@@ -186,7 +186,7 @@ export default function TapLogicQuiz({
         <>
           <div className="flex items-center justify-center gap-3 my-4 text-warm-border">
             <span className="h-px flex-1 bg-warm-border" />
-            <span className="text-xs tracking-widest">✦</span>
+            <span className="text-xs tracking-widest text-success">&#10003;</span>
             <span className="h-px flex-1 bg-warm-border" />
           </div>
           <RewardParagraph paragraphs={rewardParagraph} />
